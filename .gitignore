@@ -28,5 +28,23 @@ go.work.sum
 .env
 
 # Editor/IDE
-# .idea/
-# .vscode/
+.idea/
+.vscode/
+
+# Python build/test artifacts
+__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
+
+# uv-managed virtualenv
+.venv/
+
+tmp/
+.mypy_cache
+
+# Built protoc plugin binaries (`make plugins`)
+bin/
+
+# Rust build output (py/native)
+target/

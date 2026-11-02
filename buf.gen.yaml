@@ -1,0 +1,24 @@
+version: v2
+plugins:
+  # Go message code. protoc-gen-go must be on PATH
+  # (go install google.golang.org/protobuf/cmd/protoc-gen-go@latest).
+  - local: protoc-gen-go
+    out: go
+    opt: module=github.com/andefined/protodecimal/go
+  # shopspring/decimal accessors (make plugins).
+  - local: bin/protoc-gen-go-decimal
+    out: go
+    opt: module=github.com/andefined/protodecimal/go
+  # Python message code via the BSR remote plugin, pinned to a version
+  # whose gencode stamp (protobuf 6.30.0) is compatible with this repo's
+  # `protobuf<7` runtime pin (see pyproject.toml). protoc_builtin: python
+  # would use whatever protoc is on PATH instead, which can be newer than
+  # the runtime and stamp gencode it then refuses to import.
+  - remote: buf.build/protocolbuffers/python:v30.0
+    out: py
+  # decimal.Decimal accessors. Runs from the repo without installation;
+  # after `pip install .` the plugin is also on PATH as
+  # protoc-gen-python-decimal, so this could then just be
+  #   - local: protoc-gen-python-decimal
+  - local: py/protoc-gen-python-decimal
+    out: py

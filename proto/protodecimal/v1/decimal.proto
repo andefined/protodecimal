@@ -1,0 +1,15 @@
+// Arbitrary-precision base-10 decimal. See the README for the wire format,
+// cross-language mapping, and rationale.
+syntax = "proto3";
+
+package protodecimal.v1;
+
+option go_package = "github.com/andefined/protodecimal/go/decimalpb";
+
+// Decimal is a base-10 decimal number, with arbitrary precision and scale.
+// value = (negative ? -1 : 1) * coefficient * 10^exponent
+message Decimal {
+  bool   negative    = 1;  // omitted on the wire when positive
+  bytes  coefficient = 2;  // big-endian magnitude, empty has 0 cost
+  sint32 exponent    = 3;  // typical small negatives cost 1 byte (use zig-zag encoding)
+}

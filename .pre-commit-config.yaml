@@ -1,0 +1,30 @@
+repos:
+  - repo: https://github.com/golangci/golangci-lint
+    rev: v2.12.2
+    hooks:
+      - id: golangci-lint-fmt
+        entry: bash -c 'cd go && golangci-lint fmt'
+        files: ^go/
+      - id: golangci-lint
+        entry: bash -c 'cd go && golangci-lint run --new-from-rev HEAD --fix'
+        files: ^go/
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.21
+    hooks:
+      - id: ruff-format
+        files: ^py/
+      - id: ruff-check
+        files: ^py/
+        args: [--fix]
+
+  # No official pre-commit repo for buf; shells out to the local binary
+  # (see README prerequisites).
+  - repo: local
+    hooks:
+      - id: buf-lint
+        name: buf lint
+        entry: buf lint
+        language: system
+        files: \.proto$
+        pass_filenames: false

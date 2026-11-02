@@ -1,0 +1,114 @@
+syntax = "proto3";
+
+package example.v1;
+
+import "protodecimal/v1/decimal.proto";
+
+option go_package = "github.com/andefined/protodecimal/go/example/orderbookpb";
+
+message Level {
+  protodecimal.v1.Decimal price = 1;
+  protodecimal.v1.Decimal quantity = 2;
+}
+
+message Snapshot {
+  string symbol = 1;
+  repeated Level bids = 2;
+  repeated Level asks = 3;
+}
+
+// Exercises oneof handling in the generators.
+message PriceUpdate {
+  oneof kind {
+    protodecimal.v1.Decimal absolute = 1;
+    protodecimal.v1.Decimal delta = 2;
+  }
+}
+
+// Exercises repeated Decimal handling in the generators.
+message DeltaBlock {
+  protodecimal.v1.Decimal base = 1;
+  repeated protodecimal.v1.Decimal offsets = 2;
+}
+
+// Exercises map handling: the accessor plugins intentionally skip map
+// fields with Decimal values.
+message MapBlock {
+  map<string, protodecimal.v1.Decimal> by_symbol = 1;
+}
+
+// String-encoded equivalents of Level and Snapshot: the baseline the
+// benchmarks compare protodecimal.v1.Decimal against.
+message StringLevel {
+  string price = 1;
+  string quantity = 2;
+}
+
+message StringSnapshot {
+  string symbol = 1;
+  repeated StringLevel bids = 2;
+  repeated StringLevel asks = 3;
+}
+
+enum Side {
+  SIDE_UNSPECIFIED = 0;
+  SIDE_BID = 1;
+  SIDE_ASK = 2;
+}
+
+// Exercises every field kind in the generated decoder and the fast encoder.
+message ScalarBlock {
+  bool flag = 1;
+  int32 int32_value = 2;
+  int64 int64_value = 3;
+  uint32 uint32_value = 4;
+  uint64 uint64_value = 5;
+  sint32 sint32_value = 6;
+  sint64 sint64_value = 7;
+  fixed32 fixed32_value = 8;
+  fixed64 fixed64_value = 9;
+  sfixed32 sfixed32_value = 10;
+  sfixed64 sfixed64_value = 11;
+  float float_value = 12;
+  double double_value = 13;
+  string text = 14;
+  bytes data = 15;
+  Side side = 16;
+  Level level = 17;
+  protodecimal.v1.Decimal amount = 18;
+  repeated bool flags = 19;
+  repeated int32 int32_values = 20;
+  repeated uint64 uint64_values = 21;
+  repeated sint64 sint64_values = 22;
+  repeated fixed32 fixed32_values = 23;
+  repeated sfixed64 sfixed64_values = 24;
+  repeated float float_values = 25;
+  repeated double double_values = 26;
+  repeated string texts = 27;
+  repeated bytes blobs = 28;
+  repeated Side sides = 29;
+  repeated Level levels = 30;
+  repeated protodecimal.v1.Decimal amounts = 31;
+}
+
+// Exercises explicit presence: the Go decoder skips messages like this one,
+// and the Python fast encoder supports them.
+message OptionalBlock {
+  optional int32 count = 1;
+  optional string name = 2;
+  optional protodecimal.v1.Decimal amount = 3;
+}
+
+// Exercises field numbers that differ from declaration order: fast_encode takes
+// values in declaration order and must still write them by field number.
+message OutOfOrder {
+  string name = 3;
+  protodecimal.v1.Decimal amount = 1;
+  bool flag = 2;
+}
+
+// Exercises recursion: the Go decoder skips cyclic types.
+message TreeNode {
+  protodecimal.v1.Decimal value = 1;
+  repeated TreeNode children = 2;
+}
