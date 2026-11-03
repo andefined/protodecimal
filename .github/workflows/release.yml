@@ -5,7 +5,6 @@
 # One-time setup:
 # - PyPI: add a trusted publisher for this repository, workflow release.yml and
 #   environment "pypi", for both protodecimal and protodecimal-native.
-# - BSR: add a BUF_TOKEN secret that can push to buf.build/andefined/protodecimal.
 # - Settings > Environments: create "pypi". Settings > Pages: source "GitHub Actions".
 name: Release
 
@@ -154,22 +153,9 @@ jobs:
           merge-multiple: true
           path: dist
       - uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086 # v1.14.3
-
-  buf:
-    name: Push to the BSR
-    if: github.ref_type == 'tag'
-    needs: [verify, ci]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-      - uses: bufbuild/buf-action@85aebf73123b5c15fd5528aaecbf9129cddf7fa7 # v1.6.0
         with:
-          version: 1.75.0
-          token: ${{ secrets.BUF_TOKEN }}
-          setup_only: true
-      - run: buf push --label "$GITHUB_REF_NAME" --create --create-visibility public
-        env:
-          BUF_TOKEN: ${{ secrets.BUF_TOKEN }}
+          # Lets a re-run finish an upload that stopped partway.
+          skip-existing: true
 
   go:
     name: Announce the Go module
@@ -192,7 +178,7 @@ jobs:
   github:
     name: GitHub release
     if: github.ref_type == 'tag'
-    needs: [pypi, buf, go]
+    needs: [pypi, go]
     runs-on: ubuntu-latest
     permissions:
       contents: write

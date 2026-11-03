@@ -4,6 +4,14 @@ Newest first. Versions follow [Semantic Versioning](https://semver.org).
 
 ## Unreleased
 
+## 0.1.1 - 2026-11-03
+
+Completes the 0.1.0 release, which published only the pure-Python wheel of `protodecimal` to PyPI. `protodecimal[native]` now installs.
+
+- `protodecimal-native` is on PyPI, with prebuilt wheels for Linux, macOS and Windows.
+- `protodecimal` now has a source package on PyPI.
+- The schema is no longer published to the Buf Schema Registry. Get the `.proto` files from this repository.
+
 ## 0.1.0 - 2026-11-03
 
 First release.

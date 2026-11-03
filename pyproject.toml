@@ -20,7 +20,7 @@ dependencies = [
 # The compiled encoder for fast_encode, which falls back to pure Python without
 # it. The pin must match the version; make set-version updates it.
 native = [
-    "protodecimal-native==0.1.0",
+    "protodecimal-native==0.1.1",
 ]
 
 [project.urls]

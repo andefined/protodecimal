@@ -8,4 +8,4 @@
 See https://github.com/andefined/protodecimal for the wire format and usage.
 """
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"

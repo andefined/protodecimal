@@ -42,8 +42,6 @@ pip install "protodecimal[native]"    # adds the fast encoder
 
 The Python package needs `protobuf>=6.30,<7`. The fast encoder has prebuilt wheels for Linux and macOS (x86-64 and ARM) and Windows (x86-64). On other platforms, pip builds it from source, which needs Rust.
 
-The schema is also on the Buf Schema Registry as `buf.build/andefined/protodecimal`.
-
 Documentation: [Go](https://pkg.go.dev/github.com/andefined/protodecimal/go), [Python](https://andefined.github.io/protodecimal/).
 
 ## Usage
@@ -149,7 +147,7 @@ make tag                    # creates v0.2.0 and go/v0.2.0
 git push origin v0.2.0 go/v0.2.0
 ```
 
-Pushing the tags starts the Release workflow. It checks that the tags, versions and changelog agree, runs CI, then builds and tests the wheels on each platform. After that it publishes to PyPI and the Buf Schema Registry, makes the Go version available through the Go proxy, creates the GitHub release from the changelog notes, and updates the Python docs.
+Pushing the tags starts the Release workflow. It checks that the tags, versions and changelog agree, runs CI, then builds and tests the wheels on each platform. After that it publishes to PyPI, makes the Go version available through the Go proxy, creates the GitHub release from the changelog notes, and updates the Python docs.
 
 ## Continuous integration
 
