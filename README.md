@@ -1,5 +1,7 @@
 # protodecimal
 
+[![CI](https://github.com/andefined/protodecimal/actions/workflows/ci.yml/badge.svg)](https://github.com/andefined/protodecimal/actions/workflows/ci.yml)
+
 Lossless decimals for protobuf, with code generators that convert fields to and from [`shopspring/decimal`](https://github.com/shopspring/decimal) in Go and `decimal.Decimal` in Python.
 
 It is built for order books, where prices and quantities carry many decimal places. A 25-level snapshot with 12 to 28 decimal places takes 876 bytes, compared with 1,407 bytes as strings.
@@ -31,14 +33,18 @@ go get github.com/andefined/protodecimal/go/decimalconv
 go install github.com/andefined/protodecimal/go/cmd/protoc-gen-go-decimal@latest
 ```
 
-Python, from a checkout:
+Python:
 
 ```sh
-pip install .              # protodecimal and protoc-gen-python-decimal
-pip install ./py/native    # optional fast encoder; needs Rust and Python 3.10+
+pip install protodecimal              # includes protoc-gen-python-decimal
+pip install "protodecimal[native]"    # adds the fast encoder, Python 3.10+
 ```
 
-The Python package needs `protobuf>=6.30,<7`.
+The Python package needs `protobuf>=6.30,<7`. The fast encoder has prebuilt wheels for Linux and macOS (x86-64 and ARM) and Windows (x86-64). On other platforms, pip builds it from source, which needs Rust.
+
+The schema is also on the Buf Schema Registry as `buf.build/andefined/protodecimal`.
+
+Documentation: [Go](https://pkg.go.dev/github.com/andefined/protodecimal/go), [Python](https://andefined.github.io/protodecimal/).
 
 ## Usage
 
@@ -124,6 +130,39 @@ make help       # all targets
 ```
 
 Python code is generated with buf's remote plugin, pinned to `v30.0` to match the `protobuf` runtime, so `make generate` needs network access.
+
+## Versioning
+
+The Go module and both Python packages share one version number and follow [Semantic Versioning](https://semver.org). Before 1.0, a minor release may include breaking changes. Changes are listed in [CHANGELOG.md](CHANGELOG.md).
+
+- Go versions come from `go/vX.Y.Z` tags, because the module lives in `go/`. Python releases are tagged `vX.Y.Z`.
+- `protodecimal` and `protodecimal-native` must be the same version. If they aren't, `fast_encode` ignores the native encoder and warns.
+- Both plugins print their version with `--version`.
+- The wire format is versioned separately, by its package name. `protodecimal.v1` will not change in ways that break existing data, and `make breaking` checks this. An incompatible format would be a new `protodecimal.v2` package.
+
+To release:
+
+```sh
+make set-version V=0.2.0    # updates both Python packages and the lock files
+# move the Unreleased notes in CHANGELOG.md under "## 0.2.0", then commit
+make tag                    # creates v0.2.0 and go/v0.2.0
+git push origin v0.2.0 go/v0.2.0
+```
+
+Pushing the tags starts the Release workflow. It checks that the tags, versions and changelog agree, runs CI, then builds and tests the wheels on each platform. After that it publishes to PyPI and the Buf Schema Registry, makes the Go version available through the Go proxy, creates the GitHub release from the changelog notes, and updates the Python docs.
+
+## Continuous integration
+
+Every push to `main` and every pull request runs:
+
+- version and lock file checks
+- `buf lint`, plus `buf breaking` against the base branch on pull requests
+- a check that generated code matches `make generate`
+- Go tests on 1.22 and the latest Go, golangci-lint, and 30 seconds of each fuzz test
+- Python tests on 3.9 to 3.14, with and without the native encoder, and on the oldest supported `protobuf`
+- ruff, rustfmt and clippy
+
+Pull requests that change packaging also build and test the wheels, and changes to the Python package build the docs.
 
 ## Comparing with strings
 

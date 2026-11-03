@@ -1,0 +1,47 @@
+# Builds the Python API reference with pdoc. Releases deploy it to GitHub
+# Pages through release.yml; it can also be deployed by hand. Go documentation
+# is on pkg.go.dev.
+name: Docs
+
+on:
+  pull_request:
+    paths:
+      - py/protodecimal/**
+      - .github/workflows/docs.yml
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+      - run: uv run --with pdoc pdoc --docformat restructuredtext --output-directory site protodecimal '!protodecimal.v1'
+        env:
+          PYTHONPATH: py
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: site
+
+  deploy:
+    name: Deploy
+    if: github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5
