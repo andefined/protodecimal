@@ -1,8 +1,7 @@
 version: v2
 plugins:
-  # Go message code. protoc-gen-go must be on PATH
-  # (go install google.golang.org/protobuf/cmd/protoc-gen-go@latest).
-  - local: protoc-gen-go
+  # Go message code, from the pinned protoc-gen-go that make plugins builds.
+  - local: bin/protoc-gen-go
     out: go
     opt: module=github.com/andefined/protodecimal/go
   # shopspring/decimal accessors (make plugins).

@@ -195,7 +195,6 @@ type PriceUpdate struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Kind:
-	//
 	//	*PriceUpdate_Absolute
 	//	*PriceUpdate_Delta
 	Kind isPriceUpdate_Kind `protobuf_oneof:"kind"`

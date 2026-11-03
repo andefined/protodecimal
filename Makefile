@@ -5,14 +5,22 @@ VERSION := $(shell sed -n 's/^__version__ = "\(.*\)"/\1/p' py/protodecimal/__ini
 NATIVE_VERSION := $(shell sed -n 's/^version = "\(.*\)"/\1/p' py/native/Cargo.toml)
 EXTRA_VERSION := $(shell sed -n 's/.*"protodecimal-native==\([^;"]*\).*/\1/p' pyproject.toml)
 
+# protoc-gen-go formats its output with the formatter of the Go that built it,
+# and newer Go versions lay out some comments differently. Pinning both keeps
+# make generate identical everywhere. Go downloads the toolchain if needed.
+PROTOC_GEN_GO_VERSION := v1.33.0
+PROTOC_GEN_GO_TOOLCHAIN := go1.27.3
+
 .PHONY: plugins generate lint lint-proto lint-go lint-python lint-rust breaking \
 	fmt fmt-go fmt-python fmt-rust test test-go test-python test-native \
 	bench bench-go bench-python compare version set-version tag help
 
-plugins: ## Build the protoc plugin for Go.
+plugins: ## Build the Go protoc plugins into bin/.
 	cd go && go build -o ../bin/protoc-gen-go-decimal ./cmd/protoc-gen-go-decimal
+	GOTOOLCHAIN=$(PROTOC_GEN_GO_TOOLCHAIN) GOBIN=$(CURDIR)/bin \
+		go install google.golang.org/protobuf/cmd/protoc-gen-go@$(PROTOC_GEN_GO_VERSION)
 
-# Requires buf and protoc-gen-go on PATH. See buf.gen.yaml. Runs under
+# Requires buf on PATH. See buf.gen.yaml. Runs under
 # `uv run` because py/protoc-gen-python-decimal (invoked by buf) needs
 # the uv-managed protobuf install on its PATH to import google.protobuf.
 generate: plugins ## Generate Go and Python code from the .proto files via buf.

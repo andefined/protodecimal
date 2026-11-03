@@ -26,7 +26,7 @@ Below about 10 significant digits, a decimal is about the same size as a string.
 
 ## Installation
 
-Go:
+Go, version 1.27 or newer:
 
 ```sh
 go get github.com/andefined/protodecimal/go/decimalconv
@@ -119,7 +119,7 @@ The Go plugin also accepts the usual `module=` and `paths=` options.
 
 ## Development
 
-You need `buf`, `protoc-gen-go`, [`uv`](https://docs.astral.sh/uv/) and a Rust toolchain.
+You need Go, `buf`, [`uv`](https://docs.astral.sh/uv/) and a Rust toolchain. `make generate` builds a pinned `protoc-gen-go` into `bin/`, so generated code is the same on every machine.
 
 ```sh
 make generate   # regenerate code from proto/
@@ -158,7 +158,7 @@ Every push to `main` and every pull request runs:
 - version and lock file checks
 - `buf lint`, plus `buf breaking` against the base branch on pull requests
 - a check that generated code matches `make generate`
-- Go tests on 1.22 and the latest Go, golangci-lint, and 30 seconds of each fuzz test
+- Go tests on the version in `go.mod` and the latest Go, golangci-lint, and 30 seconds of each fuzz test
 - Python tests on 3.9 to 3.14, with and without the native encoder, and on the oldest supported `protobuf`
 - ruff, rustfmt and clippy
 
