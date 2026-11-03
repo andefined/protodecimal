@@ -530,5 +530,6 @@ impl Encoder {
 
 #[pymodule]
 fn protodecimal_native(module: &Bound<'_, PyModule>) -> PyResult<()> {
+    module.add("__version__", env!("CARGO_PKG_VERSION"))?;
     module.add_class::<Encoder>()
 }

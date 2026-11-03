@@ -36,6 +36,9 @@ package main
 
 import (
 	"flag"
+	"fmt"
+	"os"
+	"runtime/debug"
 	"strings"
 
 	"google.golang.org/protobuf/compiler/protogen"
@@ -56,6 +59,10 @@ type config struct {
 }
 
 func main() {
+	if len(os.Args) == 2 && os.Args[1] == "--version" {
+		fmt.Println("protoc-gen-go-decimal", version())
+		return
+	}
 	var flags flag.FlagSet
 	decimalType := flags.String("decimal_type", string(defaultDecimalType),
 		"fully-qualified proto name of the Decimal message")
@@ -75,6 +82,15 @@ func main() {
 		}
 		return nil
 	})
+}
+
+// version is the module version recorded by go install, or what the Go
+// toolchain records for a build from a checkout.
+func version() string {
+	if info, ok := debug.ReadBuildInfo(); ok {
+		return info.Main.Version
+	}
+	return "(unknown)"
 }
 
 func generateFile(gen *protogen.Plugin, file *protogen.File, cfg config) {

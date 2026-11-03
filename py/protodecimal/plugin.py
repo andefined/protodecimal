@@ -44,6 +44,8 @@ import sys
 from google.protobuf import descriptor_pb2
 from google.protobuf.compiler import plugin_pb2
 
+from protodecimal import __version__
+
 _FIELD = descriptor_pb2.FieldDescriptorProto
 
 DEFAULT_DECIMAL_TYPE = "protodecimal.v1.Decimal"
@@ -153,6 +155,9 @@ def render(file_proto, entries, conv_module, decimal_type):
 
 
 def main():
+    if sys.argv[1:] == ["--version"]:
+        print(f"protoc-gen-python-decimal {__version__}")
+        return
     request = plugin_pb2.CodeGeneratorRequest.FromString(sys.stdin.buffer.read())
     params = parse_parameters(request.parameter)
     decimal_type = params.get("decimal_type", DEFAULT_DECIMAL_TYPE).lstrip(".")

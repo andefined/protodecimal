@@ -5,11 +5,15 @@ PROTODECIMAL_REQUIRE_NATIVE turns a missing extension into a failure, so the
 native path can't be skipped without anyone noticing.
 """
 
+import importlib.util
 import math
 import os
 import random
+import sys
+import types
 import unittest
 from decimal import Decimal, localcontext
+from unittest import mock
 
 from google.protobuf.descriptor import FieldDescriptor as F
 
@@ -317,6 +321,18 @@ class AttachmentTest(unittest.TestCase):
 
     def test_map_messages_are_not_supported(self):
         self.assertFalse(hasattr(orderbook_pb2.MapBlock, "fast_encode"))
+
+
+class VersionTest(unittest.TestCase):
+    def test_mismatched_native_is_ignored(self):
+        stale = types.ModuleType("protodecimal_native")
+        stale.__version__ = "0.0.0"
+        spec = importlib.util.spec_from_file_location("_fast_copy", fast.__file__)
+        copy = importlib.util.module_from_spec(spec)
+        with mock.patch.dict(sys.modules, {"protodecimal_native": stale}):
+            with self.assertWarnsRegex(RuntimeWarning, "doesn't match"):
+                spec.loader.exec_module(copy)
+        self.assertFalse(copy.NATIVE)
 
 
 if __name__ == "__main__":

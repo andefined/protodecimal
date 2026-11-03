@@ -20,16 +20,28 @@ much slower. Messages using maps, groups, or required fields aren't attached.
 
 from __future__ import annotations
 
+import warnings
 from decimal import Decimal
 
 from google.protobuf import message_factory
 from google.protobuf.descriptor import FieldDescriptor
 
-from protodecimal import conv
+from protodecimal import __version__, conv
 
 try:
     import protodecimal_native as _native
 except ImportError:
+    _native = None
+
+# Both packages are released together, and an extension from another release
+# may expect a different plan layout.
+if _native is not None and getattr(_native, "__version__", None) != __version__:
+    warnings.warn(
+        f"ignoring protodecimal_native {getattr(_native, '__version__', '?')}: "
+        f"it doesn't match protodecimal {__version__}",
+        RuntimeWarning,
+        stacklevel=2,
+    )
     _native = None
 
 __all__ = ["attach_file", "NATIVE"]

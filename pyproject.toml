@@ -1,11 +1,13 @@
 [build-system]
-requires = ["setuptools>=61"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "protodecimal"
-version = "0.1.0"
+dynamic = ["version"]
 description = "Compact lossless protobuf decimals: decimal.Decimal conversions and the protoc-gen-python-decimal codegen plugin"
+readme = "README.md"
+license = "MIT"
 requires-python = ">=3.9"
 # The floor is the gencode stamp of the shipped decimal_pb2.py (see
 # buf.gen.yaml): older 6.x runtimes and other major versions refuse to import
@@ -14,8 +16,24 @@ dependencies = [
     "protobuf>=6.30,<7",
 ]
 
+[project.optional-dependencies]
+# The compiled encoder for fast_encode, which falls back to pure Python without
+# it. It targets the stable ABI from 3.10, hence the marker. The pin must match
+# the version; make set-version updates it.
+native = [
+    "protodecimal-native==0.1.0; python_version >= '3.10'",
+]
+
+[project.urls]
+Homepage = "https://github.com/andefined/protodecimal"
+Documentation = "https://andefined.github.io/protodecimal/"
+Changelog = "https://github.com/andefined/protodecimal/blob/main/CHANGELOG.md"
+
 [project.scripts]
 protoc-gen-python-decimal = "protodecimal.plugin:main"
+
+[tool.setuptools.dynamic]
+version = { attr = "protodecimal.__version__" }
 
 [tool.setuptools.packages.find]
 where = ["py"]
@@ -27,11 +45,6 @@ dev = [
     "ruff>=0.15.21",
     "pytest>=8.0",
     "pytest-benchmark>=4.0",
-]
-# The compiled encoder (needs Rust). fast_encode falls back to pure Python
-# without it. It targets the stable ABI from 3.10, hence the marker.
-native = [
-    "protodecimal-native; python_version >= '3.10'",
 ]
 
 [tool.uv.sources]
