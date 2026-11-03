@@ -106,7 +106,8 @@ jobs:
         python: ["3.10", "3.14"]
         native: [true]
         include:
-          - { os: ubuntu-latest, python: "3.9", native: false }
+          # The pure-Python package on its own.
+          - { os: ubuntu-latest, python: "3.14", native: false }
     defaults:
       run:
         shell: bash

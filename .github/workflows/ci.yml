@@ -125,38 +125,36 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ["3.9", "3.10", "3.11", "3.12", "3.13", "3.14"]
+        python: ["3.10", "3.11", "3.12", "3.13", "3.14"]
         protobuf: [locked]
         include:
-          # The oldest supported protobuf, at both ends of the native range.
+          # The oldest supported protobuf, on the oldest and newest Python.
           - python: "3.10"
             protobuf: "6.30.0"
           - python: "3.14"
             protobuf: "6.30.0"
-    env:
-      # The native encoder needs Python 3.10 or newer.
-      NATIVE: ${{ matrix.python != '3.9' }}
     steps:
       - uses: actions/checkout@v7
       - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
         with:
           python-version: ${{ matrix.python }}
-      - if: env.NATIVE == 'true'
-        uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
+      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
         with:
           toolchain: stable
-      - if: env.NATIVE == 'true'
-        uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
         with:
           workspaces: py/native
-      - run: uv sync --locked ${{ env.NATIVE == 'true' && '--extra native' || '' }}
+      # First without the native encoder, so fast_encode uses its fallback.
+      - run: uv sync --locked
       - if: matrix.protobuf != 'locked'
         run: uv pip install "protobuf==${{ matrix.protobuf }}"
       - run: make test-python
         env:
           UV_NO_SYNC: 1
-      - if: env.NATIVE == 'true'
-        run: make test-native
+      - run: uv sync --locked --extra native
+      - if: matrix.protobuf != 'locked'
+        run: uv pip install "protobuf==${{ matrix.protobuf }}"
+      - run: make test-native
         env:
           UV_NO_SYNC: 1
 

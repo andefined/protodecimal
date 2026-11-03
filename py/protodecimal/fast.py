@@ -153,7 +153,8 @@ def _fill(msg, message, values, depth: int) -> None:
             f"expected at most {len(message.fields)} fields, got {len(values)}"
         )
     oneofs = set()
-    for field, value in zip(message.fields, values):
+    # Trailing fields may be left out, so values can be shorter.
+    for field, value in zip(message.fields, values, strict=False):
         if value is None:
             continue
         oneof = field.containing_oneof

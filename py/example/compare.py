@@ -126,7 +126,9 @@ def median_ns(op, count: int) -> float:
 def measure_python(snapshots):
     decimal_wire = [encode_decimal(s) for s in snapshots]
     string_wire = [encode_string(s) for s in snapshots]
-    for levels, from_decimal, from_string in zip(snapshots, decimal_wire, string_wire):
+    for levels, from_decimal, from_string in zip(
+        snapshots, decimal_wire, string_wire, strict=True
+    ):
         if not levels == decode_decimal(from_decimal) == decode_string(from_string):
             raise SystemExit("encodings decoded to different values")
         if encode_fast(levels) != from_decimal:

@@ -8,7 +8,7 @@ dynamic = ["version"]
 description = "Compact lossless protobuf decimals: decimal.Decimal conversions and the protoc-gen-python-decimal codegen plugin"
 readme = "README.md"
 license = "MIT"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 # The floor is the gencode stamp of the shipped decimal_pb2.py (see
 # buf.gen.yaml): older 6.x runtimes and other major versions refuse to import
 # it. Verified by running the test suite on 6.30.0 and the locked 6.x version.
@@ -18,10 +18,9 @@ dependencies = [
 
 [project.optional-dependencies]
 # The compiled encoder for fast_encode, which falls back to pure Python without
-# it. It targets the stable ABI from 3.10, hence the marker. The pin must match
-# the version; make set-version updates it.
+# it. The pin must match the version; make set-version updates it.
 native = [
-    "protodecimal-native==0.1.0; python_version >= '3.10'",
+    "protodecimal-native==0.1.0",
 ]
 
 [project.urls]
@@ -53,7 +52,7 @@ protodecimal-native = { path = "py/native" }
 [tool.ruff]
 src = ["py"]
 extend-exclude = ["*_pb2.py", "*_pb2_decimal.py"]
-target-version = "py39"
+target-version = "py310"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]

@@ -25,6 +25,11 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    ignore:
+      # The shipped generated code is stamped for protobuf 6 and won't import
+      # on 7, so moving to 7 needs regenerating, not a version bump.
+      - dependency-name: protobuf
+        update-types: ["version-update:semver-major"]
     groups:
       python:
         patterns: ["*"]

@@ -33,11 +33,11 @@ go get github.com/andefined/protodecimal/go/decimalconv
 go install github.com/andefined/protodecimal/go/cmd/protoc-gen-go-decimal@latest
 ```
 
-Python:
+Python, version 3.10 or newer:
 
 ```sh
 pip install protodecimal              # includes protoc-gen-python-decimal
-pip install "protodecimal[native]"    # adds the fast encoder, Python 3.10+
+pip install "protodecimal[native]"    # adds the fast encoder
 ```
 
 The Python package needs `protobuf>=6.30,<7`. The fast encoder has prebuilt wheels for Linux and macOS (x86-64 and ARM) and Windows (x86-64). On other platforms, pip builds it from source, which needs Rust.
@@ -159,7 +159,7 @@ Every push to `main` and every pull request runs:
 - `buf lint`, plus `buf breaking` against the base branch on pull requests
 - a check that generated code matches `make generate`
 - Go tests on the version in `go.mod` and the latest Go, golangci-lint, and 30 seconds of each fuzz test
-- Python tests on 3.9 to 3.14, with and without the native encoder, and on the oldest supported `protobuf`
+- Python tests on 3.10 to 3.14, with and without the native encoder, and on the oldest supported `protobuf`
 - ruff, rustfmt and clippy
 
 Pull requests that change packaging also build and test the wheels, and changes to the Python package build the docs.
