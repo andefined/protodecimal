@@ -137,6 +137,11 @@ func TestDecodersMatchProto(t *testing.T) {
 	compareDecoders(t, benchSnapshotWire, &orderbookpb.SnapshotDecimals{}, &orderbookpb.Snapshot{})
 	compareDecoders(t, nil, &orderbookpb.SnapshotDecimals{}, &orderbookpb.Snapshot{})
 
+	trade := &orderbookpb.Trade{Symbol: "BTC-USDT"}
+	trade.SetPriceDecimal(benchPrice)
+	trade.SetQuantityDecimal(benchQty)
+	compareDecoders(t, mustMarshalWire(trade), &orderbookpb.TradeDecimals{}, &orderbookpb.Trade{})
+
 	block := mustMarshalWire(fullScalarBlock(t))
 	compareDecoders(t, block, &orderbookpb.ScalarBlockDecimals{}, &orderbookpb.ScalarBlock{})
 	var decoded orderbookpb.ScalarBlockDecimals

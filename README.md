@@ -46,7 +46,66 @@ Documentation: [Go](https://pkg.go.dev/github.com/andefined/protodecimal/go), [P
 
 ## Usage
 
-Add the plugins to your `buf.gen.yaml` (see the one in this repo). For each field of type `protodecimal.v1.Decimal`, they generate accessors:
+### Setting up your repository
+
+Your `.proto` files import `protodecimal/v1/decimal.proto`, so copy that file from a release into your repository, keeping its path:
+
+```sh
+mkdir -p third_party/protodecimal/v1
+curl -fsSL -o third_party/protodecimal/v1/decimal.proto \
+  https://raw.githubusercontent.com/andefined/protodecimal/v0.1.2/proto/protodecimal/v1/decimal.proto
+```
+
+```proto
+import "protodecimal/v1/decimal.proto";
+
+message Trade {
+  string symbol = 1;
+  protodecimal.v1.Decimal price = 2;
+}
+```
+
+Install the plugins:
+
+```sh
+go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+go install github.com/andefined/protodecimal/go/cmd/protoc-gen-go-decimal@latest
+pip install protodecimal    # includes protoc-gen-python-decimal
+```
+
+Then, with buf, list both directories in `buf.yaml` but generate code only for your own files:
+
+```yaml
+# buf.yaml
+version: v2
+modules:
+  - path: proto
+  - path: third_party
+```
+
+```yaml
+# buf.gen.yaml
+version: v2
+inputs:
+  - directory: proto
+plugins:
+  - local: protoc-gen-go
+    out: gen
+    opt: module=example.com/yourapp/gen
+  - local: protoc-gen-go-decimal
+    out: gen
+    opt: module=example.com/yourapp/gen
+  - remote: buf.build/protocolbuffers/python:v30.0
+    out: py
+  - local: protoc-gen-python-decimal
+    out: py
+```
+
+Don't generate code for `decimal.proto` itself. Your generated code uses the copy in the packages you install: `github.com/andefined/protodecimal/go/decimalpb` in Go and `protodecimal.v1.decimal_pb2` in Python. A second copy would clash with it. The Python plugin version `v30.0` produces code that works with every `protobuf` 6.x release.
+
+### Accessors
+
+For each field of type `protodecimal.v1.Decimal`, the plugins generate accessors:
 
 ```go
 level.SetPriceDecimal(decimal.RequireFromString("65122.99"))

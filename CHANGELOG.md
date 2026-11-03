@@ -4,6 +4,11 @@ Newest first. Versions follow [Semantic Versioning](https://semver.org).
 
 ## Unreleased
 
+## 0.1.2 - 2026-11-03
+
+- Fixed `protoc-gen-go-decimal` generating code that doesn't compile ("math" imported and not used) for files whose messages hold only strings and decimals.
+- README: how to use the schema from another repository.
+
 ## 0.1.1 - 2026-11-03
 
 Completes the 0.1.0 release, which published only the pure-Python wheel of `protodecimal` to PyPI. `protodecimal[native]` now installs.

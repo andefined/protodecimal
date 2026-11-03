@@ -156,7 +156,7 @@ func scalarOf(g *protogen.GeneratedFile, f *protogen.Field) scalar {
 	fixed64 := func(goType, value string) scalar {
 		return scalar{goType, ident("Fixed64Type"), ident("ConsumeFixed64"), value}
 	}
-	maxUint32 := g.QualifiedGoIdent(mathImport.Ident("MaxUint32"))
+	// Only name math where it's used: naming it adds the import.
 	switch f.Desc.Kind() {
 	case protoreflect.BoolKind:
 		return varint("bool", ident("DecodeBool")+"(v)")
@@ -172,6 +172,7 @@ func scalarOf(g *protogen.GeneratedFile, f *protogen.Field) scalar {
 	case protoreflect.Uint64Kind:
 		return varint("uint64", "v")
 	case protoreflect.Sint32Kind:
+		maxUint32 := g.QualifiedGoIdent(mathImport.Ident("MaxUint32"))
 		return varint("int32", "int32("+ident("DecodeZigZag")+"(v & "+maxUint32+"))")
 	case protoreflect.Sint64Kind:
 		return varint("int64", ident("DecodeZigZag")+"(v)")

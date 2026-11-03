@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package example.v1;
+
+import "protodecimal/v1/decimal.proto";
+
+option go_package = "github.com/andefined/protodecimal/go/example/orderbookpb";
+
+// Exercises a file holding only strings and decimals, whose generated decoder
+// must not import packages that other field types need.
+message Trade {
+  string symbol = 1;
+  protodecimal.v1.Decimal price = 2;
+  protodecimal.v1.Decimal quantity = 3;
+}
